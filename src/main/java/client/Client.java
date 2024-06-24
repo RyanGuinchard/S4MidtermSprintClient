@@ -25,7 +25,6 @@ public class Client {
         Client.scanner = scanner;
     }
 
-
     public static void main(String[] args) {
         boolean exit = false;
 
@@ -165,23 +164,43 @@ public class Client {
                 for (JsonNode node : rootNode) {
                     switch (choice) {
                         case 1:
-                            System.out.println("City: " + node.get("name").asText());
-                            System.out.println("State: " + node.get("state").asText());
+                            if (node.has("name") && node.has("state")) {
+                                System.out.println("City: " + node.get("name").asText());
+                                System.out.println("State: " + node.get("state").asText());
+                            } else {
+                                System.out.println("Missing city information.");
+                            }
                             break;
                         case 2:
-                            System.out.println("Passenger: " + node.get("firstName").asText() + " " + node.get("lastName").asText());
+                            if (node.has("firstName") && node.has("lastName")) {
+                                System.out.println("Passenger: " + node.get("firstName").asText() + " " + node.get("lastName").asText());
+                            } else {
+                                System.out.println("Missing passenger information.");
+                            }
                             break;
                         case 3:
-                            System.out.println("Airport: " + node.get("name").asText() + ", Code: " + node.get("code").asText());
+                            if (node.has("name") && node.has("code")) {
+                                System.out.println("Airport: " + node.get("name").asText() + ", Code: " + node.get("code").asText());
+                            } else {
+                                System.out.println("Missing airport information.");
+                            }
                             break;
                         case 4:
-                            System.out.println("Aircraft: " + node.get("type").asText() + ", Airline: " + node.get("airlineName").asText());
+                            if (node.has("type") && node.has("airlineName")) {
+                                System.out.println("Aircraft: " + node.get("type").asText() + ", Airline: " + node.get("airlineName").asText());
+                            } else {
+                                System.out.println("Missing aircraft information.");
+                            }
                             break;
                     }
                     if (node.has("airports") && node.get("airports").isArray()) {
                         System.out.println("Airports:");
                         for (JsonNode airportNode : node.get("airports")) {
-                            System.out.println(" - " + airportNode.get("name").asText());
+                            if (airportNode.has("name")) {
+                                System.out.println(" - " + airportNode.get("name").asText());
+                            } else {
+                                System.out.println(" - Missing airport name.");
+                            }
                         }
                     }
                     System.out.println();
