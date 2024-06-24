@@ -19,7 +19,7 @@ import org.mockito.MockitoAnnotations;
 public class ClientTest {
 
     private HttpClient httpClientMock;
-    private HttpResponse<String> httpResponseMock;
+    private HttpResponse httpResponseMock;
 
     @BeforeEach
     public void setUp() {
