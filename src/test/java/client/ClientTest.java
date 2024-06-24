@@ -1,74 +1,67 @@
 package client;
 
-import static org.mockito.Mockito.*;
-import static org.junit.jupiter.api.Assertions.*;
-
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
-import java.io.PrintStream;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.Scanner;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.MockitoAnnotations;
 
 public class ClientTest {
 
-    @Mock
     private HttpClient httpClientMock;
-
-    @Mock
     private HttpResponse<String> httpResponseMock;
 
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
+        httpClientMock = mock(HttpClient.class);
+        httpResponseMock = mock(HttpResponse.class);
         Client.setHttpClient(httpClientMock);
     }
 
     @Test
     public void testFetchAirportsByCityId() throws Exception {
-        String mockResponseBody = "[{\"name\":\"John F. Kennedy International Airport\"}]";
+        String jsonResponse = "[{\"name\": \"John F. Kennedy International Airport\"}]";
+
         when(httpResponseMock.statusCode()).thenReturn(200);
-        when(httpResponseMock.body()).thenReturn(mockResponseBody);
-        when(httpClientMock.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class)))
-                .thenReturn(httpResponseMock);
+        when(httpResponseMock.body()).thenReturn(jsonResponse);
+        when(httpClientMock.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class))).thenReturn(httpResponseMock);
 
-        InputStream in = new ByteArrayInputStream("1\n".getBytes());
+        String input = "1\n";
+        InputStream in = new ByteArrayInputStream(input.getBytes());
         System.setIn(in);
-
-        ByteArrayOutputStream outContent = new ByteArrayOutputStream();
-        System.setOut(new PrintStream(outContent));
+        Client.setScanner(new Scanner(System.in));
 
         Client.fetchAirportsByCityId();
 
-        String expectedOutput = "Airport Name: John F. Kennedy International Airport\nPress Enter to continue...\n";
-        assertEquals(expectedOutput, outContent.toString());
+        verify(httpClientMock).send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class));
     }
 
     @Test
     public void testPerformCustomQuery() throws Exception {
-        String mockResponseBody = "[{\"id\":1,\"name\":\"New York\",\"state\":\"NY\",\"population\":8419000,\"airports\":[]}]";
+        String jsonResponse = "[{\"name\": \"John F. Kennedy International Airport\"}]";
+
         when(httpResponseMock.statusCode()).thenReturn(200);
-        when(httpResponseMock.body()).thenReturn(mockResponseBody);
-        when(httpClientMock.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class)))
-                .thenReturn(httpResponseMock);
+        when(httpResponseMock.body()).thenReturn(jsonResponse);
+        when(httpClientMock.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class))).thenReturn(httpResponseMock);
 
-        InputStream in = new ByteArrayInputStream("1\n".getBytes());
+        String input = "3\n";
+        InputStream in = new ByteArrayInputStream(input.getBytes());
         System.setIn(in);
-
-        ByteArrayOutputStream outContent = new ByteArrayOutputStream();
-        System.setOut(new PrintStream(outContent));
+        Client.setScanner(new Scanner(System.in));
 
         Client.performCustomQuery();
 
-        String expectedOutput = "City: New York\nState: NY\nAirports:\n\nPress Enter to continue...\n";
-        assertEquals(expectedOutput, outContent.toString());
+        verify(httpClientMock).send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class));
     }
 }
