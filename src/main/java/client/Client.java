@@ -16,6 +16,9 @@ public class Client {
     private static final ObjectMapper objectMapper = new ObjectMapper();
     private static Scanner scanner = new Scanner(System.in);
 
+    public Client() {
+    }
+
     // For testing
     public static void setHttpClient(HttpClient httpClient) {
         Client.httpClient = httpClient;

@@ -1,7 +1,9 @@
 package client;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -12,6 +14,7 @@ import java.util.Scanner;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -23,10 +26,14 @@ public class ClientTest {
     @Mock
     private HttpResponse<String> httpResponseMock;
 
+    @InjectMocks
+    private Client client;
+
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
-        Client.setHttpClient(httpClientMock);
+        client = new Client();
+        Client.setHttpClient(httpClientMock); // Set the mock HttpClient
     }
 
     @Test
@@ -39,10 +46,10 @@ public class ClientTest {
 
         String input = "1\n";
         InputStream in = new ByteArrayInputStream(input.getBytes());
-        System.setIn(in);
-        Client.setScanner(new Scanner(System.in));
+        Scanner scanner = new Scanner(in);
+        Client.setScanner(scanner); // Set the mock Scanner
 
-        Client.fetchAirportsByCityId();
+        client.fetchAirportsByCityId();
 
         verify(httpClientMock).send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class));
     }
@@ -57,10 +64,10 @@ public class ClientTest {
 
         String input = "3\n";
         InputStream in = new ByteArrayInputStream(input.getBytes());
-        System.setIn(in);
-        Client.setScanner(new Scanner(System.in));
+        Scanner scanner = new Scanner(in);
+        Client.setScanner(scanner); // Set the mock Scanner
 
-        Client.performCustomQuery();
+        client.performCustomQuery();
 
         verify(httpClientMock).send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class));
     }
