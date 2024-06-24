@@ -7,6 +7,8 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.Scanner;
 
 public class Client {
@@ -27,13 +29,12 @@ public class Client {
                 scanner.nextLine();
             } else {
                 System.out.println("Invalid input. Please enter a number.");
-                scanner.nextLine();
+                scanner.nextLine(); // Consume invalid input
                 continue;
             }
 
             switch (choice) {
                 case 1:
-                    System.out.println("Fetching cities and their airports...");
                     fetchAirportsByCityId();
                     break;
                 case 2:
@@ -49,8 +50,7 @@ public class Client {
                     // Make API call to fetch airports passengers have used
                     break;
                 case 5:
-                    System.out.println("Performing custom query...");
-                    // Implement your custom query functionality
+                    performCustomQuery();
                     break;
                 case 6:
                     System.out.println("Exiting...");
@@ -99,6 +99,96 @@ public class Client {
             }
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    private static void performCustomQuery() {
+        System.out.println("=== Custom Query Options ===");
+        System.out.println("1. Fetch Cities");
+        System.out.println("2. Fetch Passengers");
+        System.out.println("3. Fetch Airports");
+        System.out.println("4. Fetch Aircraft");
+        System.out.println("Enter your choice: ");
+        int choice = scanner.nextInt();
+        scanner.nextLine(); // Consume newline
+
+        String endpoint = "";
+        switch (choice) {
+            case 1:
+                endpoint = "http://localhost:8080/cities";
+                break;
+            case 2:
+                endpoint = "http://localhost:8080/passengers";
+                break;
+            case 3:
+                endpoint = "http://localhost:8080/airports";
+                break;
+            case 4:
+                endpoint = "http://localhost:8080/aircraft";
+                break;
+            default:
+                System.out.println("Invalid choice. Returning to main menu.");
+                return;
+        }
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(endpoint))
+                .GET()
+                .build();
+
+        try {
+            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            if (response.statusCode() == 200) {
+                prettyPrintResponse(response.body(), choice);
+            } else {
+                System.out.println("Error: " + response.statusCode() + " - " + response.body());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void prettyPrintResponse(String responseBody, int choice) {
+        try {
+            JsonNode rootNode = objectMapper.readTree(responseBody);
+            if (rootNode.isArray()) {
+                for (JsonNode node : rootNode) {
+                    switch (choice) {
+                        case 1:
+                            System.out.println("City: " + node.get("name").asText());
+                            System.out.println("State: " + node.get("state").asText());
+                            break;
+                        case 2:
+                            System.out.println("Passenger: " + node.get("firstName").asText() + " " + node.get("lastName").asText());
+                            break;
+                        case 3:
+                            System.out.println("Airport: " + node.get("name").asText() + ", Code: " + node.get("code").asText());
+                            break;
+                        case 4:
+                            System.out.println("Aircraft: " + node.get("type").asText() + ", Airline: " + node.get("airlineName").asText());
+                            break;
+                    }
+                    if (node.has("airports") && node.get("airports").isArray()) {
+                        System.out.println("Airports:");
+                        for (JsonNode airportNode : node.get("airports")) {
+                            System.out.println(" - " + airportNode.get("name").asText());
+                        }
+                    }
+                    System.out.println();
+                }
+            } else {
+                prettyPrintNode(rootNode);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void prettyPrintNode(JsonNode node) {
+        Iterator<Map.Entry<String, JsonNode>> fields = node.fields();
+        while (fields.hasNext()) {
+            Map.Entry<String, JsonNode> field = fields.next();
+            System.out.println(field.getKey() + ": " + field.getValue().asText());
         }
     }
 
