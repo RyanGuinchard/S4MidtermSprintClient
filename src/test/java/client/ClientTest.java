@@ -31,6 +31,7 @@ public class ClientTest {
 
     @Test
     public void testFetchAirportsByCityId() throws Exception {
+        System.out.println("Setting up mock responses for fetchAirportsByCityId test.");
         String jsonResponse = "[{\"name\": \"John F. Kennedy International Airport\"}]";
 
         when(httpResponseMock.statusCode()).thenReturn(200);
@@ -40,15 +41,21 @@ public class ClientTest {
         String input = "1\n";
         InputStream in = new ByteArrayInputStream(input.getBytes());
         System.setIn(in);
-        Client.setScanner(new Scanner(System.in));
+
+        Scanner testScanner = new Scanner(System.in);
+        Client.setScanner(testScanner);
 
         Client.fetchAirportsByCityId();
 
         verify(httpClientMock).send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class));
+        System.out.println("fetchAirportsByCityId test completed.");
+
+        testScanner.close();
     }
 
     @Test
     public void testPerformCustomQuery() throws Exception {
+        System.out.println("Setting up mock responses for performCustomQuery test.");
         String jsonResponse = "[{\"name\": \"John F. Kennedy International Airport\"}]";
 
         when(httpResponseMock.statusCode()).thenReturn(200);
@@ -58,10 +65,15 @@ public class ClientTest {
         String input = "3\n";
         InputStream in = new ByteArrayInputStream(input.getBytes());
         System.setIn(in);
-        Client.setScanner(new Scanner(System.in));
+
+        Scanner testScanner = new Scanner(System.in);
+        Client.setScanner(testScanner);
 
         Client.performCustomQuery();
 
         verify(httpClientMock).send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class));
+        System.out.println("performCustomQuery test completed.");
+
+        testScanner.close();
     }
 }
