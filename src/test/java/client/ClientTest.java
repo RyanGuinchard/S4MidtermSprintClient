@@ -37,7 +37,7 @@ public class ClientTest {
         String mockResponseBody = "[{\"name\":\"John F. Kennedy International Airport\"}]";
         when(httpResponseMock.statusCode()).thenReturn(200);
         when(httpResponseMock.body()).thenReturn(mockResponseBody);
-        when(httpClientMock.send(any(HttpRequest.class), any(HttpResponse.BodyHandlers.ofString().getClass())))
+        when(httpClientMock.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class)))
                 .thenReturn(httpResponseMock);
 
         InputStream in = new ByteArrayInputStream("1\n".getBytes());
@@ -57,7 +57,7 @@ public class ClientTest {
         String mockResponseBody = "[{\"id\":1,\"name\":\"New York\",\"state\":\"NY\",\"population\":8419000,\"airports\":[]}]";
         when(httpResponseMock.statusCode()).thenReturn(200);
         when(httpResponseMock.body()).thenReturn(mockResponseBody);
-        when(httpClientMock.send(any(HttpRequest.class), any(HttpResponse.BodyHandlers.ofString().getClass())))
+        when(httpClientMock.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class)))
                 .thenReturn(httpResponseMock);
 
         InputStream in = new ByteArrayInputStream("1\n".getBytes());
