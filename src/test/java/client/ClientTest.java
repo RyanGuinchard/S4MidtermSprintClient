@@ -1,9 +1,7 @@
 package client;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -14,7 +12,6 @@ import java.util.Scanner;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -26,14 +23,10 @@ public class ClientTest {
     @Mock
     private HttpResponse<String> httpResponseMock;
 
-    @InjectMocks
-    private Client client;
-
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
         Client.setHttpClient(httpClientMock);
-        Client.setScanner(new Scanner(System.in));
     }
 
     @Test
