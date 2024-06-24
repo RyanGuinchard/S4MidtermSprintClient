@@ -12,9 +12,19 @@ import java.util.Map;
 import java.util.Scanner;
 
 public class Client {
-    private static final HttpClient httpClient = HttpClient.newHttpClient();
+    private static HttpClient httpClient = HttpClient.newHttpClient();
     private static final ObjectMapper objectMapper = new ObjectMapper();
-    private static final Scanner scanner = new Scanner(System.in);
+    private static Scanner scanner = new Scanner(System.in);
+
+    // For testing
+    public static void setHttpClient(HttpClient httpClient) {
+        Client.httpClient = httpClient;
+    }
+
+    public static void setScanner(Scanner scanner) {
+        Client.scanner = scanner;
+    }
+
 
     public static void main(String[] args) {
         boolean exit = false;
