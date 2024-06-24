@@ -90,7 +90,7 @@ public class Client {
         System.out.println("6. Exit");
     }
 
-    private static void fetchAirportsByCityId() {
+    static void fetchAirportsByCityId() {
         System.out.print("Enter City ID: ");
         int cityId = scanner.nextInt();
         scanner.nextLine(); // Consume newline
@@ -112,7 +112,7 @@ public class Client {
         }
     }
 
-    private static void performCustomQuery() {
+    static void performCustomQuery() {
         System.out.println("=== Custom Query Options ===");
         System.out.println("1. Fetch Cities");
         System.out.println("2. Fetch Passengers");

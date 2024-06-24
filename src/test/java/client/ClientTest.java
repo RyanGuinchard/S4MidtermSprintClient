@@ -1,13 +1,19 @@
 package client;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.*;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.io.PrintStream;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -20,48 +26,49 @@ public class ClientTest {
     @Mock
     private HttpResponse<String> httpResponseMock;
 
-    private Client client;
-
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
-        client = new Client();
-        Client.setHttpClient(httpClientMock); // Assuming you have a setter for the HttpClient
+        Client.setHttpClient(httpClientMock);
     }
 
     @Test
     public void testFetchAirportsByCityId() throws Exception {
-        String jsonResponse = "[{\"name\":\"John F. Kennedy International Airport\"}]";
+        String mockResponseBody = "[{\"name\":\"John F. Kennedy International Airport\"}]";
         when(httpResponseMock.statusCode()).thenReturn(200);
-        when(httpResponseMock.body()).thenReturn(jsonResponse);
-        when(httpClientMock.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class)))
+        when(httpResponseMock.body()).thenReturn(mockResponseBody);
+        when(httpClientMock.send(any(HttpRequest.class), any(HttpResponse.BodyHandlers.ofString().getClass())))
                 .thenReturn(httpResponseMock);
 
-        // Simulate user input
-        Client.setScanner(new java.util.Scanner("1\n1\n\n6\n"));
+        InputStream in = new ByteArrayInputStream("1\n".getBytes());
+        System.setIn(in);
 
-        // Run the client main method
-        Client.main(new String[]{});
+        ByteArrayOutputStream outContent = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(outContent));
 
-        // Verify the output
-        verify(httpClientMock, times(1)).send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class));
+        Client.fetchAirportsByCityId();
+
+        String expectedOutput = "Airport Name: John F. Kennedy International Airport\nPress Enter to continue...\n";
+        assertEquals(expectedOutput, outContent.toString());
     }
 
     @Test
     public void testPerformCustomQuery() throws Exception {
-        String jsonResponse = "[{\"id\":1,\"name\":\"New York\",\"state\":\"NY\",\"population\":8419000,\"airports\":[]}]";
+        String mockResponseBody = "[{\"id\":1,\"name\":\"New York\",\"state\":\"NY\",\"population\":8419000,\"airports\":[]}]";
         when(httpResponseMock.statusCode()).thenReturn(200);
-        when(httpResponseMock.body()).thenReturn(jsonResponse);
-        when(httpClientMock.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class)))
+        when(httpResponseMock.body()).thenReturn(mockResponseBody);
+        when(httpClientMock.send(any(HttpRequest.class), any(HttpResponse.BodyHandlers.ofString().getClass())))
                 .thenReturn(httpResponseMock);
 
-        // Simulate user input
-        Client.setScanner(new java.util.Scanner("5\n1\n\n6\n"));
+        InputStream in = new ByteArrayInputStream("1\n".getBytes());
+        System.setIn(in);
 
-        // Run the client main method
-        client.main(new String[]{});
+        ByteArrayOutputStream outContent = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(outContent));
 
-        // Verify the output
-        verify(httpClientMock, times(1)).send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class));
+        Client.performCustomQuery();
+
+        String expectedOutput = "City: New York\nState: NY\nAirports:\n\nPress Enter to continue...\n";
+        assertEquals(expectedOutput, outContent.toString());
     }
 }
