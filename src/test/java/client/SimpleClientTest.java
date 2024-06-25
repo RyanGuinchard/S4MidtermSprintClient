@@ -57,9 +57,9 @@ public class SimpleClientTest {
 
     @Test
     void testFetchAirportsByCityId() throws Exception {
-        when(scannerMock.nextInt()).thenReturn(1);
+        when(scannerMock.nextInt()).thenReturn(Integer.valueOf(1));
         when(httpClientMock.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class))).thenReturn(httpResponseMock);
-        when(httpResponseMock.statusCode()).thenReturn(200);
+        when(httpResponseMock.statusCode()).thenReturn(Integer.valueOf(200));
         when(httpResponseMock.body()).thenReturn("[]");
 
         JsonNode emptyNode = JsonNodeFactory.instance.arrayNode();
@@ -88,9 +88,9 @@ public class SimpleClientTest {
 
     @Test
     void testPerformCustomQuery() throws Exception {
-        when(scannerMock.nextInt()).thenReturn(1);
+        when(scannerMock.nextInt()).thenReturn(Integer.valueOf(1));
         when(httpClientMock.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class))).thenReturn(httpResponseMock);
-        when(httpResponseMock.statusCode()).thenReturn(200);
+        when(httpResponseMock.statusCode()).thenReturn(Integer.valueOf(200));
         when(httpResponseMock.body()).thenReturn("[]");
 
         JsonNode emptyNode = JsonNodeFactory.instance.arrayNode();
@@ -135,13 +135,13 @@ public class SimpleClientTest {
     void testFetchAirportsWhereAircraftCanLandAndTakeOff() throws Exception {
         // Arrange
         int aircraftId = 3;  // Example aircraft ID
-        when(scannerMock.nextInt()).thenReturn(aircraftId);
+        when(scannerMock.nextInt()).thenReturn(Integer.valueOf(aircraftId));
         when(scannerMock.nextLine()).thenReturn("");
 
         when(httpClientMock.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class)))
                 .thenReturn(httpResponseMock);
 
-        when(httpResponseMock.statusCode()).thenReturn(200);
+        when(httpResponseMock.statusCode()).thenReturn(Integer.valueOf(200));
         when(httpResponseMock.body()).thenReturn("[]");
 
         // Act
