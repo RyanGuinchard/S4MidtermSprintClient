@@ -14,7 +14,7 @@ import java.util.Scanner;
 public class Client {
     private static HttpClient httpClient = HttpClient.newHttpClient();
     private static final ObjectMapper objectMapper = new ObjectMapper();
-    private static Scanner scanner = new Scanner(System.in);
+    static Scanner scanner = new Scanner(System.in);
 
     public Client() {
     }
@@ -82,7 +82,7 @@ public class Client {
         scanner.close();
     }
 
-    private static void displayMenu() {
+    static void displayMenu() {
         System.out.println("=== Client Application Menu ===");
         System.out.println("1. What airports are in what cities?");
         System.out.println("2. List all aircraft passengers have travelled on?");
