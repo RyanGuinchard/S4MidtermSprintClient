@@ -40,6 +40,20 @@ public class SimpleClientTest {
         Client.setHttpClient(httpClientMock);
         Client.setScanner(scannerMock);
     }
+    @Test
+    void testFetchAirportsByPassengerId() throws Exception {
+        when(scannerMock.nextInt()).thenReturn(1);
+        when(httpClientMock.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class))).thenReturn(httpResponseMock);
+        when(httpResponseMock.statusCode()).thenReturn(200);
+        when(httpResponseMock.body()).thenReturn("[]");
+
+        JsonNode emptyNode = JsonNodeFactory.instance.arrayNode();
+        when(objectMapperMock.readTree(any(String.class))).thenReturn(emptyNode);
+
+        Client.fetchAirportsByPassengerId();
+
+        verify(httpClientMock).send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class));
+    }
 
     @Test
     void testFetchAirportsByCityId() throws Exception {
@@ -55,6 +69,22 @@ public class SimpleClientTest {
 
         verify(httpClientMock).send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class));
     }
+    @Test
+    void testFetchAirportsByCityIdWithNon200Status() throws Exception {
+        when(scannerMock.nextInt()).thenReturn(1);
+        when(scannerMock.nextLine()).thenReturn(""); // Consume newline
+        when(httpClientMock.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class))).thenReturn(httpResponseMock);
+        when(httpResponseMock.statusCode()).thenReturn(404);
+        when(httpResponseMock.body()).thenReturn("Not Found");
+
+        Client.fetchAirportsByCityId();
+
+        verify(httpClientMock).send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class));
+        verify(httpResponseMock, times(2)).statusCode(); // Ensure statusCode() is called twice
+        verify(httpResponseMock, times(1)).body(); // Ensure body() is called once
+    }
+
+
 
     @Test
     void testPerformCustomQuery() throws Exception {
@@ -69,6 +99,36 @@ public class SimpleClientTest {
         Client.performCustomQuery();
 
         verify(httpClientMock).send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class));
+    }
+    @Test
+    void testInvalidMenuChoice() {
+        when(scannerMock.hasNextInt()).thenReturn(true, true); // Expecting two integer inputs
+        when(scannerMock.nextInt()).thenReturn(999, 6); // First invalid choice, then exit option
+        when(scannerMock.nextLine()).thenReturn(""); // Consume newline
+        Client.main(new String[]{});
+        verify(scannerMock, times(2)).nextInt(); // Ensure it was called twice: once for invalid, once for exit
+        verify(scannerMock, atLeast(2)).nextLine(); // Ensure it consumes the newline at least twice
+    }
+
+
+    @Test
+    void testExitOption() {
+        when(scannerMock.hasNextInt()).thenReturn(true);
+        when(scannerMock.nextInt()).thenReturn(6); // Exit option
+        when(scannerMock.nextLine()).thenReturn(""); // Consume newline
+        Client.main(new String[]{});
+        verify(scannerMock).nextInt();
+        verify(scannerMock, atLeastOnce()).nextLine(); // Verify nextLine() is called to consume newlines
+    }
+
+    @Test
+    void testPerformCustomQueryWithInvalidChoice() throws Exception {
+        when(scannerMock.nextInt()).thenReturn(999); // Invalid choice
+        when(scannerMock.nextLine()).thenReturn(""); // Consume newline
+
+        Client.performCustomQuery();
+
+        verify(httpClientMock, never()).send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class));
     }
 
     @Test
