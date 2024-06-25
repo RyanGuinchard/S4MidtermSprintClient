@@ -59,6 +59,7 @@ public class Client {
                     break;
                 case 4:
                     System.out.println("Fetching airports passengers have used...");
+                    fetchAirportsByPassengerId();
                     // Make API call to fetch airports passengers have used
                     break;
                 case 5:
@@ -128,6 +129,28 @@ public class Client {
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
             if (response.statusCode() == 200) {
                 prettyPrintAircraft(response.body());
+            } else {
+                System.out.println("Error: " + response.statusCode() + " - " + response.body());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    static void fetchAirportsByPassengerId() {
+        System.out.print("Enter Passenger ID: ");
+        int passengerId = scanner.nextInt();
+        scanner.nextLine();
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create("http://localhost:8080/passengers/" + passengerId + "/airports"))
+                .GET()
+                .build();
+
+        try {
+            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            if (response.statusCode() == 200) {
+                prettyPrintAirports(response.body());
             } else {
                 System.out.println("Error: " + response.statusCode() + " - " + response.body());
             }
