@@ -60,6 +60,7 @@ public class Client {
                     break;
                 case 4:
                     System.out.println("Fetching airports passengers have used...");
+                    fetchAirportsByPassengerId();
                     // Make API call to fetch airports passengers have used
                     break;
                 case 5:
@@ -137,6 +138,7 @@ public class Client {
         }
     }
 
+
     static void fetchAirportsWhereAircraftCanLandAndTakeOff() {
         System.out.print("Enter Aircraft ID: ");
         int aircraftId = scanner.nextInt();
@@ -144,6 +146,15 @@ public class Client {
 
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create("http://localhost:8080/aircrafts/" + aircraftId + "/airports"))
+=======
+    static void fetchAirportsByPassengerId() {
+        System.out.print("Enter Passenger ID: ");
+        int passengerId = scanner.nextInt();
+        scanner.nextLine();
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create("http://localhost:8080/passengers/" + passengerId + "/airports"))
+
                 .GET()
                 .build();
 
@@ -155,7 +166,14 @@ public class Client {
                 System.out.println("Error: " + response.statusCode() + " - " + response.body());
             }
         } catch (Exception e) {
+
             System.out.println("Failed to fetch data: " + e.getMessage());
+        }
+    }
+
+
+=======
+            e.printStackTrace();
         }
     }
 
