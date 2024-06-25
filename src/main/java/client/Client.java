@@ -301,7 +301,7 @@ public class Client {
                     System.out.println("Airport Name: " + name + ", Code: " + code);
                 }
             } else {
-                System.out.println("No airports found for the specified aircraft.");
+                System.out.println("No airports found");
             }
         } catch (Exception e) {
             System.out.println("Error processing the response: " + e.getMessage());
