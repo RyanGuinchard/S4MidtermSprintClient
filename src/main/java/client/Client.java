@@ -55,6 +55,7 @@ public class Client {
                     break;
                 case 3:
                     System.out.println("Fetching airports where aircraft can take off and land...");
+                    fetchAirportsWhereAircraftCanLandAndTakeOff();
                     // Make API call to fetch airports where aircraft can take off and land
                     break;
                 case 4:
@@ -135,6 +136,29 @@ public class Client {
             e.printStackTrace();
         }
     }
+
+    static void fetchAirportsWhereAircraftCanLandAndTakeOff() {
+        System.out.print("Enter Aircraft ID: ");
+        int aircraftId = scanner.nextInt();
+        scanner.nextLine();  // Consume newline after the number input
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create("http://localhost:8080/aircrafts/" + aircraftId + "/airports"))
+                .GET()
+                .build();
+
+        try {
+            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            if (response.statusCode() == 200) {
+                prettyPrintAirports(response.body());
+            } else {
+                System.out.println("Error: " + response.statusCode() + " - " + response.body());
+            }
+        } catch (Exception e) {
+            System.out.println("Failed to fetch data: " + e.getMessage());
+        }
+    }
+
 
     static void performCustomQuery() {
         System.out.println("=== Custom Query Options ===");
@@ -249,18 +273,21 @@ public class Client {
     private static void prettyPrintAirports(String responseBody) {
         try {
             JsonNode airportsNode = objectMapper.readTree(responseBody);
-            if (airportsNode.isArray()) {
+            if (airportsNode.isArray() && !airportsNode.isEmpty()) {
+                System.out.println("Airports where the aircraft can take off and land:");
                 for (JsonNode airportNode : airportsNode) {
-                    String airportName = airportNode.get("name").asText();
-                    System.out.println("Airport Name: " + airportName);
+                    String name = airportNode.has("name") ? airportNode.get("name").asText() : "N/A";
+                    String code = airportNode.has("code") ? airportNode.get("code").asText() : "N/A";
+                    System.out.println("Airport Name: " + name + ", Code: " + code);
                 }
             } else {
-                System.out.println("No airports found for the specified city.");
+                System.out.println("No airports found for the specified aircraft.");
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println("Error processing the response: " + e.getMessage());
         }
     }
+
 
     private static void prettyPrintAircraft(String responseBody) {
         try {

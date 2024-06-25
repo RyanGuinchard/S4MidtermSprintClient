@@ -70,4 +70,27 @@ public class SimpleClientTest {
 
         verify(httpClientMock).send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class));
     }
+
+    @Test
+    void testFetchAirportsWhereAircraftCanLandAndTakeOff() throws Exception {
+        // Arrange
+        int aircraftId = 3;  // Example aircraft ID
+        when(scannerMock.nextInt()).thenReturn(aircraftId);
+        when(scannerMock.nextLine()).thenReturn("");
+
+        when(httpClientMock.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class)))
+                .thenReturn(httpResponseMock);
+
+        when(httpResponseMock.statusCode()).thenReturn(200);
+        when(httpResponseMock.body()).thenReturn("[]");
+
+        // Act
+        Client.fetchAirportsWhereAircraftCanLandAndTakeOff();
+
+        // Assert
+        verify(httpClientMock).send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class));
+        verify(httpResponseMock).body();  // Ensure the response body is accessed
+    }
+
+
 }
