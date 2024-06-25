@@ -51,7 +51,7 @@ public class Client {
                     break;
                 case 2:
                     System.out.println("Fetching all aircraft passengers have travelled on...");
-                    // Make API call to fetch all aircraft passengers have travelled on
+                    fetchAircraftByPassengerId();
                     break;
                 case 3:
                     System.out.println("Fetching airports where aircraft can take off and land...");
@@ -114,6 +114,28 @@ public class Client {
         }
     }
 
+    static void fetchAircraftByPassengerId() {
+        System.out.print("Enter Passenger ID: ");
+        int passengerId = scanner.nextInt();
+        scanner.nextLine();
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create("http://localhost:8080/passengers/" + passengerId + "/aircrafts"))
+                .GET()
+                .build();
+
+        try {
+            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            if (response.statusCode() == 200) {
+                prettyPrintAircraft(response.body());
+            } else {
+                System.out.println("Error: " + response.statusCode() + " - " + response.body());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     static void performCustomQuery() {
         System.out.println("=== Custom Query Options ===");
         System.out.println("1. Fetch Cities");
@@ -136,7 +158,7 @@ public class Client {
                 endpoint = "http://localhost:8080/airports";
                 break;
             case 4:
-                endpoint = "http://localhost:8080/aircraft";
+                endpoint = "http://localhost:8080/aircrafts";
                 break;
             default:
                 System.out.println("Invalid choice. Returning to main menu.");
@@ -234,6 +256,23 @@ public class Client {
                 }
             } else {
                 System.out.println("No airports found for the specified city.");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void prettyPrintAircraft(String responseBody) {
+        try {
+            JsonNode aircraftNode = objectMapper.readTree(responseBody);
+            if (aircraftNode.isArray()) {
+                for (JsonNode aircraft : aircraftNode) {
+                    String aircraftType = aircraft.get("type").asText();
+                    String airlineName = aircraft.get("airlineName").asText();
+                    System.out.println("Aircraft Type: " + aircraftType + ", Airline: " + airlineName);
+                }
+            } else {
+                System.out.println("No aircraft found for the specified passenger.");
             }
         } catch (Exception e) {
             e.printStackTrace();
