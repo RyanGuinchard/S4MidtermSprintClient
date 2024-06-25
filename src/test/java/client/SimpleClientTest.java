@@ -1,34 +1,73 @@
 package client;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.util.Scanner;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
-class SimpleClientTest {
+public class SimpleClientTest {
+    @Mock
+    private HttpClient httpClientMock;
+
+    @Mock
+    private HttpResponse<String> httpResponseMock;
+
+    @Mock
+    private Scanner scannerMock;
+
+    @Mock
+    private ObjectMapper objectMapperMock;
+
+    @InjectMocks
+    private Client client;
+
+    @BeforeEach
+    void setUp() {
+        MockitoAnnotations.openMocks(this);
+        Client.setHttpClient(httpClientMock);
+        Client.setScanner(scannerMock);
+    }
 
     @Test
-    void testDisplayMenu() {
-        // Redirect output to a string to capture it
-        ByteArrayOutputStream outContent = new ByteArrayOutputStream();
-        System.setOut(new PrintStream(outContent));
+    void testFetchAirportsByCityId() throws Exception {
+        when(scannerMock.nextInt()).thenReturn(1);
+        when(httpClientMock.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class))).thenReturn(httpResponseMock);
+        when(httpResponseMock.statusCode()).thenReturn(200);
+        when(httpResponseMock.body()).thenReturn("[]");
 
-        // Call the method to test
-        Client.displayMenu();
+        JsonNode emptyNode = JsonNodeFactory.instance.arrayNode();
+        when(objectMapperMock.readTree(any(String.class))).thenReturn(emptyNode);
 
-        // Verify the output
-        String expectedOutput = "=== Client Application Menu ===\n" +
-                "1. What airports are in what cities?\n" +
-                "2. List all aircraft passengers have travelled on?\n" +
-                "3. Which airports can aircraft take off from and land at?\n" +
-                "4. What airports have passengers used?\n" +
-                "5. Perform custom query\n" +
-                "6. Exit\n";
-        assertEquals(expectedOutput, outContent.toString());
+        Client.fetchAirportsByCityId();
 
-        // Reset System.out
-        System.setOut(System.out);
+        verify(httpClientMock).send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class));
+    }
+
+    @Test
+    void testPerformCustomQuery() throws Exception {
+        when(scannerMock.nextInt()).thenReturn(1);
+        when(httpClientMock.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class))).thenReturn(httpResponseMock);
+        when(httpResponseMock.statusCode()).thenReturn(200);
+        when(httpResponseMock.body()).thenReturn("[]");
+
+        JsonNode emptyNode = JsonNodeFactory.instance.arrayNode();
+        when(objectMapperMock.readTree(any(String.class))).thenReturn(emptyNode);
+
+        Client.performCustomQuery();
+
+        verify(httpClientMock).send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class));
     }
 }

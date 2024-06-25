@@ -12,23 +12,29 @@ import java.util.Map;
 import java.util.Scanner;
 
 public class Client {
-    private static HttpClient httpClient = HttpClient.newHttpClient();
-    private static final ObjectMapper objectMapper = new ObjectMapper();
-    static Scanner scanner = new Scanner(System.in);
+    private static HttpClient httpClient;
+    private static ObjectMapper objectMapper;
+    private static Scanner scanner;
 
+    // Default constructor for production use
     public Client() {
+        this(HttpClient.newHttpClient(), new ObjectMapper(), new Scanner(System.in));
     }
 
-    // For testing
-    public static void setHttpClient(HttpClient httpClient) {
-        Client.httpClient = httpClient;
+    // Constructor for testing
+    public Client(HttpClient httpClient, ObjectMapper objectMapper, Scanner scanner) {
+        this.httpClient = httpClient;
+        this.objectMapper = objectMapper;
+        this.scanner = scanner;
     }
 
-    public static void setScanner(Scanner scanner) {
-        Client.scanner = scanner;
+    public static void setScanner(Scanner scannerMock) {
     }
 
-    public static void main(String[] args) {
+    public static void setHttpClient(HttpClient httpClientMock) {
+    }
+
+    public void run() {
         boolean exit = false;
 
         while (!exit) {
@@ -82,7 +88,7 @@ public class Client {
         scanner.close();
     }
 
-    static void displayMenu() {
+    public void displayMenu() {
         System.out.println("=== Client Application Menu ===");
         System.out.println("1. What airports are in what cities?");
         System.out.println("2. List all aircraft passengers have travelled on?");
@@ -92,7 +98,7 @@ public class Client {
         System.out.println("6. Exit");
     }
 
-    static void fetchAirportsByCityId() {
+    public static void fetchAirportsByCityId() {
         System.out.print("Enter City ID: ");
         int cityId = scanner.nextInt();
         scanner.nextLine(); // Consume newline
@@ -114,7 +120,7 @@ public class Client {
         }
     }
 
-    static void performCustomQuery() {
+    public static void performCustomQuery() {
         System.out.println("=== Custom Query Options ===");
         System.out.println("1. Fetch Cities");
         System.out.println("2. Fetch Passengers");
