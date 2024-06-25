@@ -56,12 +56,10 @@ public class Client {
                 case 3:
                     System.out.println("Fetching airports where aircraft can take off and land...");
                     fetchAirportsWhereAircraftCanLandAndTakeOff();
-                    // Make API call to fetch airports where aircraft can take off and land
                     break;
                 case 4:
                     System.out.println("Fetching airports passengers have used...");
                     fetchAirportsByPassengerId();
-                    // Make API call to fetch airports passengers have used
                     break;
                 case 5:
                     performCustomQuery();
@@ -138,7 +136,6 @@ public class Client {
         }
     }
 
-
     static void fetchAirportsWhereAircraftCanLandAndTakeOff() {
         System.out.print("Enter Aircraft ID: ");
         int aircraftId = scanner.nextInt();
@@ -146,15 +143,6 @@ public class Client {
 
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create("http://localhost:8080/aircrafts/" + aircraftId + "/airports"))
-=======
-    static void fetchAirportsByPassengerId() {
-        System.out.print("Enter Passenger ID: ");
-        int passengerId = scanner.nextInt();
-        scanner.nextLine();
-
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("http://localhost:8080/passengers/" + passengerId + "/airports"))
-
                 .GET()
                 .build();
 
@@ -166,17 +154,31 @@ public class Client {
                 System.out.println("Error: " + response.statusCode() + " - " + response.body());
             }
         } catch (Exception e) {
-
-            System.out.println("Failed to fetch data: " + e.getMessage());
-        }
-    }
-
-
-=======
             e.printStackTrace();
         }
     }
 
+    static void fetchAirportsByPassengerId() {
+        System.out.print("Enter Passenger ID: ");
+        int passengerId = scanner.nextInt();
+        scanner.nextLine();
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create("http://localhost:8080/passengers/" + passengerId + "/airports"))
+                .GET()
+                .build();
+
+        try {
+            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            if (response.statusCode() == 200) {
+                prettyPrintAirports(response.body());
+            } else {
+                System.out.println("Error: " + response.statusCode() + " - " + response.body());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     static void performCustomQuery() {
         System.out.println("=== Custom Query Options ===");
@@ -200,7 +202,7 @@ public class Client {
                 endpoint = "http://localhost:8080/airports";
                 break;
             case 4:
-                endpoint = "http://localhost:8080/aircrafts";
+                endpoint = "http://localhost:8080/aircraft";
                 break;
             default:
                 System.out.println("Invalid choice. Returning to main menu.");
@@ -305,7 +307,6 @@ public class Client {
             System.out.println("Error processing the response: " + e.getMessage());
         }
     }
-
 
     private static void prettyPrintAircraft(String responseBody) {
         try {
